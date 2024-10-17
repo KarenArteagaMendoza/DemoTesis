@@ -1,0 +1,47 @@
+# crear directorio para base de datos postgres
+mkdir .\Postgres
+
+# crear contenedor en docker postgresql
+docker run -itd -e POSTGRES_USER=redis_user -e POSTGRES_PASSWORD=post123 -p 5432:5432 --name postgresql postgres
+
+# acceder al shell de postgres
+docker exec -it postgresql bash
+
+# crear base de datos
+createdb -h localhost -p 5432 -U redis_user redis
+PGPASSWORD=post123 psql -U redis_user redis
+ALTER SYSTEM SET wal_level = logical;
+exit
+exit
+
+# reiniciar contenedor
+docker restart postgresql
+docker exec -it postgresql bash
+
+# crear esquema y tabla
+PGPASSWORD=post123 psql -U redis_user redis
+CREATE SCHEMA IF NOT EXISTS test AUTHORIZATION redis_user;
+CREATE TABLE IF NOT EXISTS test.tesis (id INT PRIMARY KEY, name TEXT, value TEXT);
+
+#eliminar 
+drop table test.tesis;
+drop SCHEMA IF EXISTS test AUTHORIZATION redis_user;
+
+# agregar un primer dato de prueba
+INSERT INTO test.tesis values (0, 'prueba', 'prueba');
+SELECT * FROM test.tesis;
+exit 
+exit
+
+# insertar 1000 datos a postgres
+python postgresql.py
+
+# crear entorno redis Redis
+# cluster
+docker run -d --cap-add sys_resource --name rdinode -p 127.0.0.1:8443:8443 -p 127.0.0.1:9443:9443 -p 127.0.0.1:12000:12000 redislabs/redis
+# nodo
+docker exec -it rdinode rladmin cluster create addr 172.17.0.3 username mail@mail.com password 123 name tesis.local
+# crear base de datos 
+start chrome "https://localhost:8443"
+# configurar base de datos en puerto 12000, nombre cache-aside
+
