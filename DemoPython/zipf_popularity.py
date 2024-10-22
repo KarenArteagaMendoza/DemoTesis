@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.stats import zipfian
+import time
 
 
 def muestra_zipf(N, s, sample_size):
@@ -17,13 +19,9 @@ def muestra_zipf(N, s, sample_size):
     return ks, pmf, samples
 
 # Parametros 
-def muestra_diezmill():
-    N = 1000000       # Maximum value (large N)
-    s = 0.8           # Exponent parameter (s < 1)
-    sample_size = 10000000  # Very large sample size
-    ks, pmf, samples = muestra_zipf(N, s, sample_size)
-
-    # Calculate counts
+def graficar_muestra(N, s, sample_size, ks, pmf, samples):
+    
+   # Calculate counts
     counts = np.bincount(samples, minlength=N + 1)[1:N + 1]
 
     # Expected counts
@@ -38,4 +36,14 @@ def muestra_diezmill():
     plt.title(f'Zipf Distribution (s={s}): Sampled vs Expected Counts')
     plt.legend()
     plt.grid(True, which="both", ls="--")
-    plt.show()
+    plt.savefig('muestra.png')
+    plt.close()
+
+    counts, bins, patches = plt.hist(samples, bins=100, density=True, alpha=0.6, color='skyblue', label='Sampled Data')
+    plt.plot(ks, pmf, 'k.-', alpha=0.5, label='expected count')
+    plt.figure(figsize=(12, 7))
+    plt.savefig('muestraCuentas.png')
+    plt.close()
+
+
+

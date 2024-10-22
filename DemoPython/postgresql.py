@@ -24,9 +24,9 @@ def generate_record(record_id):
 # Function to insert data into PostgreSQL
 def insert_data_to_postgres(num_records):
     with conn.cursor() as cur:
-        for record_id in range(1, num_records + 1):
+        for record_id in range(900001, 900001 + num_records):
             record = generate_record(record_id)
-            print(record)
+            print(record_id)
             cur.execute("INSERT INTO test.tesis (id, name, value) VALUES (%s, %s, %s)", record)
         conn.commit()
 

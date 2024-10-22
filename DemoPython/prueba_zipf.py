@@ -86,24 +86,58 @@ plt.legend()
 plt.grid(True, which="both", ls="--")
 plt.show()'''
 
-
+'''
 import numpy as np
 from scipy.stats import zipfian
 import matplotlib.pyplot as plt
 fig, ax = plt.subplots(1, 1)
 
 a, n = 0.8, 100
-mean, var, skew, kurt = zipfian.stats(a, n, moments='mvsk')
+# mean, var, skew, kurt = zipfian.stats(a, n, moments='mvsk')
 
-x = np.arange(zipfian.ppf(0.01, a, n),
-              zipfian.ppf(0.99, a, n))
-samp = zipfian.pmf(x, a, n)
-print(samp)
-ax.plot(x, 1000*samp, 'bo', ms=8, label='zipfian pmf')
-ax.vlines(x, 0, 1000*zipfian.pmf(x, a, n), colors='b', lw=5, alpha=0.5)
+# x = np.arange(zipfian.ppf(0.01, a, n), zipfian.ppf(0.99, a, n))
+# samp = zipfian.pmf(x, a, n)
+#print(samp)
+samples = zipfian.rvs(a, n, size = 1000)
+print(samples)
+
+plt.figure(figsize=(12, 6))
+
+count = np.bincount(samples)
+# plt.bar(k, count[1:], alpha=0.5, label='sample count')
+counts, bins, patches = plt.hist(samples, bins=np.arange(1, N + 2) - 0.5, density=True, alpha=0.6, color='skyblue', label='Sampled Data')
+plt.plot(k, P, 'k.-', alpha=0.5, label='expected count')   
+plt.semilogy()
+plt.grid(alpha=0.4)
+plt.legend()
+plt.title(f'Zipf sample, a={0.8}, size={sample_size}')
+plt.show()'''
+
+'''#ax.plot(x, 1000*samp, 'bo', ms=8, label='zipfian pmf')
+#ax.vlines(x, 0, 1000*zipfian.pmf(x, a, n), colors='b', lw=5, alpha=0.5)
+counts = np.bincount(samples, minlength=1001)[1:1001]
 
 rv = zipfian(a, n)
-ax.vlines(x, 0, 1000*rv.pmf(x), colors='k', linestyles='-', lw=1,
+ax.vlines(samples, 0, 1000*rv.pmf(x), colors='k', linestyles='-', lw=1,
         label='frozen pmf')
 ax.legend(loc='best', frameon=False)
+plt.show()'''
+
+
+import numpy as np
+from scipy.stats import zipfian
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots(1, 1)
+
+a = 0.8
+n = 100
+
+x = np.arange(zipfian.ppf(0.01, a, n), zipfian.ppf(0.99, a, n))
+samples = zipfian.rvs(a, n, size = 1000)
+counts, bins, patches = plt.hist(samples, bins=np.arange(1, 100) - 0.5, density=True, alpha=0.6, color='skyblue', label='Sampled Data')
+#ax.plot(x, zipfian.pmf(x, a, n), 'bo', ms=8, label='zipfian pmf')
+plt.plot(x, zipfian.pmf(x, a, n), 'k.-', alpha=0.5, label='expected count')
+#ax.plot(x, 0, zipfian.pmf(x, a, n), colors='b', lw=5, alpha=0.5)
+
 plt.show()

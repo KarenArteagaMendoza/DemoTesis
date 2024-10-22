@@ -36,7 +36,8 @@ def setRedis(key, data):
 # Actualizar el tiempo de expiración 
 def updateTTL(key):
     # cambiar TTL
-    redis_client.expire(key, 300)
+    redis_client.expire(key, 1500) # tiempo caracteristico aproximado para 76% del cache
+    # para 90 % poner 1950
 
 
 
@@ -48,7 +49,7 @@ def get_data(key):
 
     
     if cached_data:
-        updateTTL(key)
+        #updateTTL(key)
         # Si el dato está en Redis regresarlo con la bandera "Redis"
         return jsonify({"source": 0, "id": key, "data": cached_data})
     
@@ -60,7 +61,7 @@ def get_data(key):
         data = {"name": result[1], "value": result[2]}
         # Agregar al cache
         setRedis(key, result)
-        updateTTL(key)
+        #updateTTL(key)
     
         # Return the data with a PostgreSQL flag 1: postgres
         return jsonify({"source": 1, "id": result[0], "data": data})

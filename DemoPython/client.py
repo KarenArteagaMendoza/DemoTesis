@@ -2,6 +2,10 @@ import requests
 import random
 import csv
 import numpy as np
+import zipf_popularity as zp
+import matplotlib.pyplot as plt
+import time
+
 
 BASE_URL = "http://127.0.0.1:5000"
 CSV_FILENAME = "request_results.csv"
@@ -23,10 +27,10 @@ def request_data(key):
             return data 
         elif response.status_code == 404:
             print("Data not found.")
-            return 2
+            return {"source": -1, "id": 0, "data": 0}
         else:
             print(f"Error: {response.status_code}")
-            return 3
+            return {"source": -1, "id": 0, "data": 0}
 
     except Exception as e:
         print(f"Failed to retrieve data: {e}")
@@ -54,7 +58,7 @@ def make_requests_and_export_to_csv(num_requests, data_id_range, filename):
 
 
 def zipfs_sample(num_requests, data_id_range):
-    a = 0.8 # a es el parámetro de la distribucion zipfs
+    a = 1.1 # a es el parámetro de la distribucion zipfs
     # Generate a random sample of 1000 values from the Zipf distribution
     sample = np.random.zipf(a, num_requests)
     # Ensure all values are within the range 1 to 10,000
@@ -82,11 +86,56 @@ def make_zipf_requests_csv(num_requests, data_id_range, filename):
     
     print(f"Results exported to {filename}")
 
-# Main function to initiate the process
-if __name__ == "__main__":
+
+def prueba(N, s, sample_size):
+    ks, pmf, samples = zp.muestra_zipf(N, s, sample_size)
+    zp.graficar_muestra(N, s, sample_size, ks, pmf, samples)
+    cache_hits = 0
+    hit_rate = 0.0
+    i = 1
+    rates = []
+
     # make_requests_and_export_to_csv(3000, DATA_ID_RANGE, CSV_FILENAME)
     # make_zipf_requests_csv(3000, DATA_ID_RANGE, ZIPF_CSV_FILENAME)
-    for key in range(20000): # necesito 100000 para llenar la base
+    for key in samples: # necesito 100000 para llenar la base
+        start_time = time.time()
         data = request_data(key)
-        # Append the result (request number, data_id, source) to the list
-        # print(f"Source: {data['source']} - ID: {data['id']}")
+        if data['source'] == 0:
+            cache_hits += 1
+        hit_rate = cache_hits/i
+        end_time = time.time()
+        print(f'Consulta: {i}   |', f'Hit rate: {hit_rate}    |', f'Tiempo ejecución: {end_time - start_time}')
+        rates.append(hit_rate)
+        i += 1
+    
+    return rates
+
+def graficar_hitrates(N, s, sample_size):
+    rates = prueba(N, s, sample_size)
+    plt.figure(figsize=(10, 6))
+    plt.plot(range(1, sample_size + 1), rates, label='Hit Rate to First Database')
+    plt.xlabel('Request Number')
+    plt.ylabel('Hit Rate')
+    plt.title('Hit Rate to First Database Over Time')
+    plt.grid(True)
+    plt.legend()
+    plt.savefig('hit_rates.png')
+    plt.show()
+
+def llenar_cache():
+    for key in range(100000):
+        start_time = time.time()
+        data = request_data(key)
+        end_time = time.time()
+        print(f'Tiempo entre consultas: {end_time - start_time}')
+
+
+# Main function to initiate the process
+if __name__ == "__main__":
+
+    N = 76_000       # Maximum value (large N)
+    s = 0.8           # Exponent parameter (s < 1)
+    sample_size = 200_000  # Very large sample size
+    #llenar_cache()
+    graficar_hitrates(N, s, sample_size)
+
