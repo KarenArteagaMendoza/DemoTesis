@@ -21,14 +21,14 @@ docker exec -it postgresql bash
 # crear esquema y tabla
 PGPASSWORD=post123 psql -U redis_user redis
 CREATE SCHEMA IF NOT EXISTS test AUTHORIZATION redis_user;
-CREATE TABLE IF NOT EXISTS test.tesis (id INT PRIMARY KEY, name TEXT, value TEXT);
+CREATE TABLE IF NOT EXISTS test.tesis (id INT PRIMARY KEY, name TEXT, value1 TEXT, value2 TEXT, value3 TEXT, value4 TEXT, value5 TEXT);
 
 #eliminar 
 drop table test.tesis;
 drop SCHEMA IF EXISTS test AUTHORIZATION redis_user;
 
 # agregar un primer dato de prueba
-INSERT INTO test.tesis values (0, 'prueba', 'prueba');
+INSERT INTO test.tesis values (0, 'prueba', 'prueba', 'prueba', 'prueba', 'prueba', 'prueba');
 SELECT * FROM test.tesis;
 SELECT COUNT(*) FROM test.tesis;
 exit 

@@ -2,8 +2,8 @@ import numpy as np
 from scipy.optimize import newton
 
 # Parameters
-N = 76_000  # Number of objects
-C = 76_000    # Cache size 90%
+N = 12_400  # Number of objects
+C = 12_400    # Cache size 90%
 alpha = 0.8    # Zipf distribution parameter
 
 # Step 1: Generate the Zipf distribution for q(i)

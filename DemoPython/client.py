@@ -34,7 +34,8 @@ def request_data(key):
 
     except Exception as e:
         print(f"Failed to retrieve data: {e}")
-        return 4
+        return {"source": -1, "id": 0, "data": 0}
+    
 
 # Function to make 500 random requests and store the results
 def make_requests_and_export_to_csv(num_requests, data_id_range, filename):
@@ -123,7 +124,7 @@ def graficar_hitrates(N, s, sample_size):
     plt.show()
 
 def llenar_cache():
-    for key in range(100000):
+    for key in range(15000):
         start_time = time.time()
         data = request_data(key)
         end_time = time.time()
@@ -133,7 +134,7 @@ def llenar_cache():
 # Main function to initiate the process
 if __name__ == "__main__":
 
-    N = 76_000       # Maximum value (large N)
+    N = 12_400       # Maximum value (large N)
     s = 0.8           # Exponent parameter (s < 1)
     sample_size = 200_000  # Very large sample size
     #llenar_cache()

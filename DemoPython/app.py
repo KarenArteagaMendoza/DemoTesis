@@ -31,7 +31,7 @@ def get_data_from_postgres(query):
 def setRedis(key, data):
     # cambiar TTL
     # redis_client.setex(key, 300, json.dumps(data))
-    redis_client.hset(key, mapping={"data": data[1],"value": data[2]})
+    redis_client.hset(key, mapping={"name": data[1],"value1": data[2],"value2": data[3],"value3": data[4],"value4": data[5],"value5": data[6]})
 
 # Actualizar el tiempo de expiración 
 def updateTTL(key):
@@ -54,11 +54,11 @@ def get_data(key):
         return jsonify({"source": 0, "id": key, "data": cached_data})
     
     # If not found in Redis, fetch from PostgreSQL
-    query = f"SELECT id, name, value FROM test.tesis WHERE id = {key}"
+    query = f"SELECT id, name, value1, value2, value3, value4, value5 FROM test.tesis WHERE id = {key}"
     result = get_data_from_postgres(query)
     
     if result:
-        data = {"name": result[1], "value": result[2]}
+        data = {"name": result[1], "value1": result[2],"value2": result[3],"value3": result[4],"value4": result[5],"value5": result[6]}
         # Agregar al cache
         setRedis(key, result)
         #updateTTL(key)
