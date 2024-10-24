@@ -2,7 +2,7 @@ import psycopg2
 import random
 import string
 
-# PostgreSQL connection setup
+# Conexión a PostreSQL
 conn = psycopg2.connect(
     host="localhost",
     database="redis",
@@ -11,21 +11,21 @@ conn = psycopg2.connect(
     port = 5432
 )
 
-# Function to generate random string
+# Función para generar cadenas de texto aleatorias
 def generate_random_string(length):
     return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
 
-# Function to generate random data for each record 1.1 KB
+# Función para generar registros aleatorios de 7KB
 def generate_record(record_id):
-    name = generate_random_string(1500)  # Random string of length 500
-    value1 = generate_random_string(1500) # Random string of length 500
-    value2 = generate_random_string(1500) # Random string of length 500
-    value3 = generate_random_string(1500) # Random string of length 500
-    value4 = generate_random_string(500) # Random string of length 500
-    value5 = generate_random_string(500) # Random string of length 500
+    name = generate_random_string(1500)  
+    value1 = generate_random_string(1500) 
+    value2 = generate_random_string(1500) 
+    value3 = generate_random_string(1500) 
+    value4 = generate_random_string(500) 
+    value5 = generate_random_string(500) 
     return (record_id, name, value1, value2, value3, value4, value5)
 
-# Function to insert data into PostgreSQL
+# Función para insertar datos a PostgreSQL
 def insert_data_to_postgres(num_records):
     with conn.cursor() as cur:
         for record_id in range(1, 1 + num_records):
@@ -36,11 +36,9 @@ def insert_data_to_postgres(num_records):
 
 
 def main():
-    # Estimate around 1,000,000 records to reach 1 GB 
-    # Necesito 1,000,000 para llenar la base
+    # Necesito 100,000 registros para generar alrededor de 1GB
     num_records = 100000 
 
-    # Insert records into PostgreSQL
     insert_data_to_postgres(num_records)
 
     print(f"{num_records} records added to PostgreSQL.")

@@ -24,10 +24,10 @@ def request_data(key):
         # Checar si la consulta fue exitosa
         if response.status_code == 200:
             data = response.json()
-            return data 
+            return data # Regresar el dato solicitado
         elif response.status_code == 404:
             print("Data not found.")
-            return {"source": -1, "id": 0, "data": 0}
+            return {"source": -1, "id": 0, "data": 0} 
         else:
             print(f"Error: {response.status_code}")
             return {"source": -1, "id": 0, "data": 0}
@@ -57,53 +57,23 @@ def make_requests_and_export_to_csv(num_requests, data_id_range, filename):
     
     print(f"Results exported to {filename}")
 
-
-def zipfs_sample(num_requests, data_id_range):
-    a = 1.1 # a es el parámetro de la distribucion zipfs
-    # Generate a random sample of 1000 values from the Zipf distribution
-    sample = np.random.zipf(a, num_requests)
-    # Ensure all values are within the range 1 to 10,000
-    sample = np.clip(sample, data_id_range[0], data_id_range[1])
-    return sample
-
-
-def make_zipf_requests_csv(num_requests, data_id_range, filename):
-    results = []
-    sample = zipfs_sample(num_requests, data_id_range)
-    # Loop to make the requests
+# Función que genera una muestra de tamaño "sample_size" de distribución Zipf
+# N es el tamaño de la base de datos principal
+# s es el parámetro de la función de densidad Zipf s > 0
+# Regresa un arreglo de tamaño "sample_size" de tasas de aciertos al caché de la prueba
+def aciertos(N, s, sample_size):
+    ks, pmf, samples = zp.muestra_zipf(N, s, sample_size) # Generar una muestra Zipf
+    zp.graficar_muestra(N, s, sample_size, ks, pmf, samples) # Graficar muestra generada
+    cache_hits = 0 # Número de aciertos al caché
+    hit_rate = 0.0 # Tasa de aciertos al caché
     i = 1
-    for key in sample:
-        data = request_data(key)
-        # Append the result (request number, data_id, source) to the list
-        print(f"Source: {data['source']} - ID: {data['id']}")
-        results.append([i, key, data['source']])
-        i += 1
-
-    # Write results to a CSV file
-    with open(filename, mode="w", newline="") as file:
-        writer = csv.writer(file)
-        writer.writerow(["Consulta", "ID", "Fuente"]) # 0: caché, 1: base de datos
-        writer.writerows(results)
-    
-    print(f"Results exported to {filename}")
-
-
-def prueba(N, s, sample_size):
-    ks, pmf, samples = zp.muestra_zipf(N, s, sample_size)
-    zp.graficar_muestra(N, s, sample_size, ks, pmf, samples)
-    cache_hits = 0
-    hit_rate = 0.0
-    i = 1
-    rates = []
-
-    # make_requests_and_export_to_csv(3000, DATA_ID_RANGE, CSV_FILENAME)
-    # make_zipf_requests_csv(3000, DATA_ID_RANGE, ZIPF_CSV_FILENAME)
+    rates = [] # Arreglo de tasas de acierto
     for key in samples: # necesito 100000 para llenar la base
-        start_time = time.time()
-        data = request_data(key)
-        if data['source'] == 0:
+        start_time = time.time() 
+        data = request_data(key) # Consultar la llave 
+        if data['source'] == 0: # Si la llave está en caché
             cache_hits += 1
-        hit_rate = cache_hits/i
+        hit_rate = cache_hits/i # Actualizar tasa de aciertos
         end_time = time.time()
         print(f'Consulta: {i}   |', f'Hit rate: {hit_rate}    |', f'Tiempo ejecución: {end_time - start_time}')
         rates.append(hit_rate)
@@ -111,18 +81,23 @@ def prueba(N, s, sample_size):
     
     return rates
 
+# Función para graficar las tasas de acierto contra el número de consultas
+# Llama a la función "aciertos()"
 def graficar_hitrates(N, s, sample_size):
-    rates = prueba(N, s, sample_size)
+    rates = aciertos(N, s, sample_size)
     plt.figure(figsize=(10, 6))
-    plt.plot(range(1, sample_size + 1), rates, label='Hit Rate to First Database')
-    plt.xlabel('Request Number')
-    plt.ylabel('Hit Rate')
-    plt.title('Hit Rate to First Database Over Time')
+    plt.plot(range(1, sample_size + 1), rates, label='Tasa de aciertos al caché')
+    plt.xlabel('Número de consulta')
+    plt.ylabel('Tasa de aciertos')
+    plt.title('Tasa de aciertos al caché en el tiempo')
     plt.grid(True)
     plt.legend()
-    plt.savefig('hit_rates.png')
+    plt.savefig('hit_rates.png') # Guardar la gráfica
     plt.show()
 
+# Función para obtener métricas sobre el almacenamiento del caché
+# Genera n consultas a la aplicación de llaves nuevas para conocer la cantidad de datos que llenan el caché
+# Imprime el tiempo entre una consulta y otra para conocer cuántas consultas se hacen por segundo
 def llenar_cache():
     for key in range(15000):
         start_time = time.time()
@@ -131,12 +106,12 @@ def llenar_cache():
         print(f'Tiempo entre consultas: {end_time - start_time}')
 
 
-# Main function to initiate the process
 if __name__ == "__main__":
-
-    N = 12_400       # Maximum value (large N)
-    s = 0.8           # Exponent parameter (s < 1)
-    sample_size = 200_000  # Very large sample size
-    #llenar_cache()
+    # El 90% del caché se llena con 12_400 llaves
+    # Tiempo característico: 
+    N = 12_400       # Tamaño de la base de datos principal (proporcional al caché)
+    s = 0.8           # Parámetro de la distribución Zipf entre (0.8, 1.1)
+    sample_size = 200_000  # Tamaño de la muestra que se va a generar
+    #llenar_cache() # Descomentar para hacer pruebas al caché
     graficar_hitrates(N, s, sample_size)
 

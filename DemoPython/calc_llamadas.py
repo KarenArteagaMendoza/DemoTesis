@@ -1,13 +1,11 @@
 import numpy as np
+from scipy.stats import zipfian
 
 # Parameters
 N = 12400  # Number of unique values
 calls_per_second = 100  # Number of calls per second
-alpha = 1.2  # Zipf distribution parameter (adjustable based on the data)
+alpha = 0.8  # Zipf distribution parameter (adjustable based on the data)
 
-# Step 1: Generate Zipf-distributed values
-# Zipf distribution generates ranks based on popularity q(i) ~ 1 / i^alpha
-probabilities = np.random.zipf(alpha, size=N)
 
 # Normalize the probabilities to ensure they sum to 1
 probabilities = np.array([1 / (i ** alpha) for i in range(1, N + 1)])

@@ -3,9 +3,11 @@ import matplotlib.pyplot as plt
 from scipy.stats import zipfian
 import time
 
-
+# Función para generar una muestra de distribución Zipf de tamaño "sample_size"
+# Valores tomados de {1, 2, ... N} 
+# s es el parámetro de la distribución s>0
 def muestra_zipf(N, s, sample_size):
-    # Compute PMF and CDF
+    # Computar funciones de densidad y distribución
     ks = np.arange(1, N + 1)
     pmf = ks ** (-s)
     Z = np.sum(pmf)
@@ -18,30 +20,29 @@ def muestra_zipf(N, s, sample_size):
     samples = np.searchsorted(cdf, U) + 1  # +1 because ks starts from 1
     return ks, pmf, samples
 
-# Parametros 
+# Función para graficar la cuenta de valores de la muestra
 def graficar_muestra(N, s, sample_size, ks, pmf, samples):
-    
-   # Calculate counts
+    # Calcular cuentas
     counts = np.bincount(samples, minlength=N + 1)[1:N + 1]
 
-    # Expected counts
+    # Cuentas esperadas
     expected_counts = sample_size * pmf
 
-    # Plot the results
+    # Graficar resultados
     plt.figure(figsize=(12, 7))
-    plt.loglog(ks, counts, label='Sampled Counts')
-    plt.loglog(ks, expected_counts, label='Expected Counts', linestyle='--')
-    plt.xlabel('Value (k)')
-    plt.ylabel('Counts')
-    plt.title(f'Zipf Distribution (s={s}): Sampled vs Expected Counts')
+    plt.loglog(ks, counts, label='Cuentas de la muestra')
+    plt.loglog(ks, expected_counts, label='Cuentas esperadas', linestyle='--')
+    plt.xlabel('Dato (k)')
+    plt.ylabel('Cuentas')
+    plt.title(f'Distribuciión Zipf (s={s}): Cuentas de la muestra vs esperadas')
     plt.legend()
     plt.grid(True, which="both", ls="--")
     plt.savefig('muestra.png')
     plt.close()
 
-    counts, bins, patches = plt.hist(samples, bins=100, density=True, alpha=0.6, color='skyblue', label='Sampled Data')
-    plt.plot(ks, pmf, 'k.-', alpha=0.5, label='expected count')
     plt.figure(figsize=(12, 7))
+    counts, bins, patches = plt.hist(samples, bins=100, density=True, alpha=0.6, color='skyblue', label='Muestra')
+    plt.plot(ks, pmf, 'k.-', alpha=0.5, label='Cuentas esperadas')
     plt.savefig('muestraCuentas.png')
     plt.close()
 
