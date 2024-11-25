@@ -89,7 +89,7 @@ def graficar_hitrates(N, s, sample_size):
     plt.plot(range(1, sample_size + 1), rates, label='Tasa de aciertos al caché')
     plt.xlabel('Número de consulta')
     plt.ylabel('Tasa de aciertos')
-    plt.title('Tasa de aciertos al caché en el tiempo')
+    plt.title("Tasa de aciertos al caché de 50 LRU")
     plt.grid(True)
     plt.legend()
     plt.savefig('hit_rates.png') # Guardar la gráfica
@@ -107,11 +107,42 @@ def llenar_cache():
 
 
 if __name__ == "__main__":
-    # El 90% del caché se llena con 12_400 llaves
     # Tiempo característico: 
-    N = 12_400       # Tamaño de la base de datos principal (proporcional al caché)
+    N = 27_722       # Tamaño de la base de datos principal (proporcional al caché)
     s = 0.8           # Parámetro de la distribución Zipf entre (0.8, 1.1)
-    sample_size = 200_000  # Tamaño de la muestra que se va a generar
+    sample_size = 400_000  # Tamaño de la muestra que se va a generar, 200,000 para 100% y 80% 
     #llenar_cache() # Descomentar para hacer pruebas al caché
     graficar_hitrates(N, s, sample_size)
+
+
+'''
+Para TTL
+C = 13_800
+Valores de N (tamaño de base de datos principal):
+    13_800 - caché 100%
+    17_250 - caché 80%
+    27_600 - caché 50%
+    69_000 - caché 20%
+    138_000 - caché 10%
+'''
+
+'''
+Para LRU
+C = 13_861
+Valores de N (tamaño de base de datos principal):
+    13_861 - caché 100%
+    17_327 - caché 80%
+    27_722 - caché 50%
+    69_305 - caché 20%
+    138_610 - caché 10%
+'''
+
+'''
+Tamaños de muestras
+    300_000 - caché 100%
+    300_000 - caché 80%
+    400_000 - caché 50%
+    500_000 - caché 20%
+    500_000 - caché 10%
+'''
 

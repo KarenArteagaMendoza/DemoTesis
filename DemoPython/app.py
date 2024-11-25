@@ -32,16 +32,23 @@ def setRedis(key, data):
     # cambiar TTL
     with redis_client.pipeline() as pipe:
         pipe.hset(key, mapping={"name": data[1],"value1": data[2],"value2": data[3],"value3": data[4],"value4": data[5],"value5": data[6]})
-        pipe.expire(key, 1500) 
+        #pipe.expire(key, 861) #comentar para 100% y pruebas LRU
         pipe.execute()
     
 
 # Actualizar el tiempo de expiración para datos que ya están en el caché
 def updateTTL(key):
     # cambiar TTL
-    redis_client.expire(key, 1500) # tiempo caracteristico aproximado para 76% del cache
-    # para 90 % poner 1950
+    redis_client.expire(key, 861) # tiempo caracteristico aproximado para 80% del cache
 
+'''
+Aproximaciones:
+con 78 consultas por segundo
+80% - 861 segundos
+50% - 497 segundos
+20% - 327 segundos
+10% - 277 segundos
+'''
 
 # Endpoint para obtener datos del caché o de la base de datos persistente
 @app.route('/get_data/<int:key>', methods=['GET'])
@@ -50,7 +57,7 @@ def get_data(key):
     cached_data = redis_client.hgetall(key)
     
     if cached_data:
-        #updateTTL(key) # descomentar esta línea para pruebas de caché < 100%
+        #updateTTL(key) # descomentar esta línea para pruebas de caché < 100%, comentar para 100% y prueba LRU
         # Source: 0 - está en el caché
         return jsonify({"source": 0, "id": key, "data": cached_data})
     

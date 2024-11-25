@@ -28,7 +28,7 @@ def generate_record(record_id):
 # Función para insertar datos a PostgreSQL
 def insert_data_to_postgres(num_records):
     with conn.cursor() as cur:
-        for record_id in range(1, 1 + num_records):
+        for record_id in range(100_001, 100_001 + num_records):
             record = generate_record(record_id)
             print(record_id)
             cur.execute("INSERT INTO test.tesis (id, name, value1, value2, value3, value4, value5) VALUES (%s, %s, %s, %s, %s, %s, %s)", record)
@@ -36,8 +36,8 @@ def insert_data_to_postgres(num_records):
 
 
 def main():
-    # Necesito 100,000 registros para generar alrededor de 1GB
-    num_records = 100000 
+    # Necesito 100,000 registros para generar alrededor de 1.5GB 150,000
+    num_records = 50000 
 
     insert_data_to_postgres(num_records)
 

@@ -3,17 +3,17 @@ from scipy.optimize import newton, bisect, minimize
 
 '''
 Valores de N (tamaño de base de datos principal)
-    12,400 - caché 100%
-    15,500 - caché 80%
-    24,800 - caché 50%
-    62,000 - caché 20%
-    124,000 - caché 10%
+    13_800 - caché 100%
+    17_250 - caché 80%
+    27_600 - caché 50%
+    69_000 - caché 20%
+    138_000 - caché 10%
 '''
 # Parámetros
-N = 24_800  # Tamaño de la base principal 
-C = 12_400    # Tamaño del caché
+N = 138_000  # Tamaño de la base principal 
+C = 13_800    # Tamaño del caché
 ALPHA = 0.8    # Parámetro de la distribución de Zipf s > 0
-CALLS = 100  # llamadas por segundo
+CALLS = 78  # llamadas por segundo 84
 
 # Generar la distribución de Zipf para q(i)
 q = np.array([1 / (i ** ALPHA) for i in range(1, N + 1)])
@@ -63,25 +63,12 @@ optim = optnum()
 segs = optim/CALLS
 print(f"OptNum - t_C = {optim:.6f}", f"|   Segundos: {segs}", f"|   Minutos: {segs/60}")
 
-# ------------------------------ Punto fijo --------------------------------
-def fixed_point_iteration(tc):
-    # Calculate the new tc based on the previous tc
-    return C / np.sum(q * np.exp(-q * tc))
 
-# Step 3: Iterate to find t_C
-t_C = 1.0  # Initial guess
-tolerance = 1e-6
-max_iterations = 200
-
-for i in range(max_iterations):
-    new_t_C = fixed_point_iteration(t_C)
-    if abs(new_t_C - t_C) < tolerance:
-        mins = new_t_C/CALLS
-        print(f"Punto fijo - t_C = {new_t_C:.6f} después de {i+1} iteraciones", f"|   Tiempo en minutos: {mins}")
-        t_C = new_t_C
-        break
-    t_C = new_t_C
-else:
-    print("No converge despues de 200 iteraciones.")
-
-
+'''
+Aproximaciones:
+con 78 consultas por segundo
+80% - 861 segundos
+50% - 497 segundos
+20% - 327 segundos
+10% - 277 segundos
+'''
