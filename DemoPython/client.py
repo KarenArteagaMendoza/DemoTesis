@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import time
 
 
-BASE_URL = "http://127.0.0.1:5000"
+BASE_URL = "http://127.0.0.1:5001"
 
 
 
@@ -51,7 +51,8 @@ def aciertos(N, s, sample_size):
             cache_hits += 1
         hit_rate = cache_hits/i # Actualizar tasa de aciertos
         end_time = time.time()
-        print(f'Consulta: {i}   |', f'Hit rate: {hit_rate}    |', f'Tiempo ejecución: {end_time - start_time}')
+        if i%100 == 0:
+            print(f'Consulta: {i}   |', f'Hit rate: {hit_rate}    |', f'Tiempo ejecución: {end_time - start_time}')
         rates.append(hit_rate)
         i += 1
     
@@ -92,7 +93,7 @@ def llenar_cache():
 if __name__ == "__main__":
     #llenar_cache() # Descomentar para hacer pruebas al caché
     # Tiempo característico: 
-    N =  69_000      # Tamaño de la base de datos principal (proporcional al caché)
+    N =  138_000      # Tamaño de la base de datos principal (proporcional al caché)
     s = 0.8           # Parámetro de la distribución Zipf entre (0.8, 1.1)
     sample_size = 500_000  # Tamaño de la muestra que se va a generar, 200,000 para 100% y 80% 
     graficar_hitrates(N, s, sample_size)

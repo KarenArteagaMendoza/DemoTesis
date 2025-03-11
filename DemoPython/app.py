@@ -3,22 +3,37 @@ import psycopg2
 import redis
 
 # Implementar la función de Flask
+print("Starting Flask app...")  # Debugging
 app = Flask(__name__)
 
-# Conexión de Redis
-redis_client = redis.Redis(
-    host='localhost',
-    port=12000,
-    decode_responses=True 
-)
-# Conexión de PostgreSQL
-post_client = psycopg2.connect(
-    host="localhost",
-    database="redis",
-    user="redis_user",
-    password="post123",
-    port = 5432
-)
+def redisCon():
+    try:
+        # Conexión de Redis
+        redis_client = redis.Redis(
+            host='localhost',
+            port=12000,
+            decode_responses=True 
+        )
+        print("exito: redis")
+        return redis_client
+    except:
+        print("error: redis")
+        return None
+def psCon():
+    try:
+        # Conexión de PostgreSQL
+        post_client = psycopg2.connect(
+            host="localhost",
+            database="redis",
+            user="redis_user",
+            password="post123",
+            port = 5432
+        )
+        print("exito: postgres")
+        return post_client
+    except:
+        print("error: postgres")
+        return None
 
 # Consultar datos de PostgreSQL
 def get_data_from_postgres(query):
@@ -32,7 +47,7 @@ def setRedis(key, data):
     # cambiar TTL
     with redis_client.pipeline() as pipe:
         pipe.hset(key, mapping={"name": data[1],"value1": data[2],"value2": data[3],"value3": data[4],"value4": data[5],"value5": data[6]})
-        pipe.expire(key, 344) #comentar para 100% y pruebas LRU
+        #pipe.expire(key, 344) #comentar para 100% y pruebas LRU
         pipe.execute()
     
 
@@ -57,7 +72,7 @@ def get_data(key):
     cached_data = redis_client.hgetall(key)
     
     if cached_data:
-        updateTTL(key) # descomentar esta línea para pruebas de caché < 100%, comentar para 100% y prueba LRU
+        #updateTTL(key) # descomentar esta línea para pruebas de caché < 100%, comentar para 100% y prueba LRU
         # Source: 0 - está en el caché
         return jsonify({"source": 0, "id": key, "data": cached_data})
     
@@ -75,6 +90,9 @@ def get_data(key):
     else:
         return jsonify({"error": "Data not found"}), 404
 
-# Running the Flask app
+print("Running Flask...")
+redis_client = redisCon()
+post_client = psCon()
 if __name__ == '__main__':
     app.run(debug=True)
+
