@@ -10,10 +10,10 @@ Valores de N (tamaño de base de datos principal)
     138_000 - caché 10%
 '''
 # Parámetros
-N = 138_000  # Tamaño de la base principal 
+N = 69_000  # Tamaño de la base principal 
 C = 13_800    # Tamaño del caché
 ALPHA = 0.8    # Parámetro de la distribución de Zipf s > 0
-CALLS = 78  # llamadas por segundo 84
+CALLS = 74  # llamadas por segundo 84
 
 # Generar la distribución de Zipf para q(i)
 q = np.array([1 / (i ** ALPHA) for i in range(1, N + 1)])

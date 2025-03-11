@@ -2,8 +2,8 @@ import numpy as np
 from scipy.stats import zipfian
 
 # Parameters
-N = 12400  # Number of unique values
-calls_per_second = 100  # Number of calls per second
+N = 13_800  # Number of unique values
+calls_per_second = 61  # Number of calls per second
 alpha = 0.8  # Zipf distribution parameter (adjustable based on the data)
 
 

@@ -49,3 +49,8 @@ start chrome "https://localhost:8443"
 
 
 sudo mount -t nfs 172.17.0.3:/DataVolumeRedis/Public /mnt/Public
+
+
+psql -h 187.190.185.111 -U redis_user -d redis
+docker run -d --name pos -p 5432:5432 -e POSTGRES_PASSWORD=post123 redis
+docker run -d -e POSTGRES_USER=redis_user -e POSTGRES_PASSWORD=post123 -p 5432:5432 --name postgresql postgres
